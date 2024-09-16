@@ -31,15 +31,15 @@ func doMain(args []string) error {
 	client := devbox.NewClient(&http.Client{})
 
 	for _, pkg := range config.Packages {
-		resolveRespose, err := client.Resolve(devbox.ResolveRequest{
+		resolveResponse, err := client.Resolve(devbox.ResolveRequest{
 			Name:    pkg.Name,
-			Version: pkg.Version,
+			Version: "latest",
 		})
 		if err != nil {
 			return err
 		}
-		if pkg.Version != resolveRespose.Version {
-			fmt.Printf("%s@%s -> %s (latest)\n", pkg.Name, pkg.Version, resolveRespose.Version)
+		if pkg.Version != resolveResponse.Version {
+			fmt.Printf("%s@%s -> %s (latest)\n", pkg.Name, pkg.Version, resolveResponse.Version)
 		} else {
 			fmt.Printf("%s@%s (up-to-date)\n", pkg.Name, pkg.Version)
 		}
