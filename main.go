@@ -1,49 +1,27 @@
 package main
 
 import (
-	"fmt"
-	"github.com/ngyewch/devbox-helper/devbox"
-	"net/http"
+	"github.com/urfave/cli/v2"
+	"log"
 	"os"
 )
 
 func main() {
-	err := doMain(os.Args[1:])
+	app := &cli.App{
+		Name:  "devbox-helper",
+		Usage: "Devbox helper",
+		Commands: []*cli.Command{
+			{
+				Name:      "latest",
+				Usage:     "latest",
+				ArgsUsage: "[(directory with or path to devbox.json)]",
+				Action:    doLatest,
+			},
+		},
+	}
+
+	err := app.Run(os.Args)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-}
-
-func doMain(args []string) error {
-	f, err := os.Open(args[0])
-	if err != nil {
-		return err
-	}
-	defer func(f *os.File) {
-		_ = f.Close()
-	}(f)
-
-	config, err := devbox.ParseConfig(f)
-	if err != nil {
-		return err
-	}
-
-	client := devbox.NewClient(&http.Client{})
-
-	for _, pkg := range config.Packages {
-		resolveResponse, err := client.Resolve(devbox.ResolveRequest{
-			Name:    pkg.Name,
-			Version: "latest",
-		})
-		if err != nil {
-			return err
-		}
-		if pkg.Version != resolveResponse.Version {
-			fmt.Printf("%s@%s -> %s (latest)\n", pkg.Name, pkg.Version, resolveResponse.Version)
-		} else {
-			fmt.Printf("%s@%s (up-to-date)\n", pkg.Name, pkg.Version)
-		}
-	}
-
-	return nil
 }
