@@ -1,3 +1,3 @@
-module github.com/ngyewch/devbox-outdated
+module github.com/ngyewch/devbox-helper
 
 go 1.23

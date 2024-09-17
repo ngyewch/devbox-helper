@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/ngyewch/devbox-outdated/devbox"
+	"github.com/ngyewch/devbox-helper/devbox"
 	"net/http"
 	"os"
 )
