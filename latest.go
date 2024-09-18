@@ -5,54 +5,29 @@ import (
 	"github.com/ngyewch/devbox-helper/devbox"
 	"github.com/urfave/cli/v2"
 	"net/http"
-	"os"
-	"path/filepath"
+	"strings"
 )
 
 func doLatest(cCtx *cli.Context) error {
-	configPath := filepath.Join(".", "devbox.json")
-	if cCtx.NArg() > 0 {
-		path := cCtx.Args().Get(0)
-		fileInfo, err := os.Stat(path)
-		if err != nil {
-			return err
-		}
-		if fileInfo.IsDir() {
-			configPath = filepath.Join(path, "devbox.json")
-		} else {
-			configPath = path
-		}
-	}
+	packageSpec := cCtx.Args().Get(0)
 
-	f, err := os.Open(configPath)
-	if err != nil {
-		return err
-	}
-	defer func(f *os.File) {
-		_ = f.Close()
-	}(f)
-
-	config, err := devbox.ParseConfig(f)
-	if err != nil {
-		return err
+	parts := strings.SplitN(packageSpec, "@", 2)
+	packageName := parts[0]
+	packageVersion := "latest"
+	if len(parts) == 2 {
+		packageVersion = parts[1]
 	}
 
 	client := devbox.NewClient(&http.Client{})
 
-	for _, pkg := range config.Packages {
-		resolveResponse, err := client.Resolve(devbox.ResolveRequest{
-			Name:    pkg.Name,
-			Version: "latest",
-		})
-		if err != nil {
-			return err
-		}
-		if pkg.Version != resolveResponse.Version {
-			fmt.Printf("%s@%s -> %s (latest)\n", pkg.Name, pkg.Version, resolveResponse.Version)
-		} else {
-			fmt.Printf("%s@%s (up-to-date)\n", pkg.Name, pkg.Version)
-		}
+	resolveResponse, err := client.Resolve(devbox.ResolveRequest{
+		Name:    packageName,
+		Version: packageVersion,
+	})
+	if err != nil {
+		return err
 	}
+	fmt.Printf("latest version: %s@%s\n", resolveResponse.Name, resolveResponse.Version)
 
 	return nil
 }
