@@ -13,10 +13,8 @@ tasks:
 
   build:
     desc: Build
-    deps: [ install ]
     cmds:
-      - mkdir -p build
-      - go build -o build/ .
+      - goreleaser --snapshot --clean
 
   dependencyUpdates:
     desc: Show dependency updates
