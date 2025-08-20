@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/ngyewch/devbox-helper/devbox"
-	"github.com/urfave/cli/v2"
 	"net/http"
 	"strings"
+
+	"github.com/ngyewch/devbox-helper/devbox"
+	"github.com/urfave/cli/v2"
 )
 
 func doLatest(cCtx *cli.Context) error {
