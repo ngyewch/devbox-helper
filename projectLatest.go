@@ -1,17 +1,19 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/ngyewch/devbox-helper/devbox"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
-func doProjectLatest(cCtx *cli.Context) error {
-	projectDir := projectDirFlag.Get(cCtx)
+func doProjectLatest(ctx context.Context, cmd *cli.Command) error {
+	projectDir := cmd.String(projectDirFlag.Name)
+
 	configPath := filepath.Join(projectDir, "devbox.json")
 
 	f, err := os.Open(configPath)

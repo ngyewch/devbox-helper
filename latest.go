@@ -1,16 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/ngyewch/devbox-helper/devbox"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
-func doLatest(cCtx *cli.Context) error {
-	packageSpec := cCtx.Args().Get(0)
+func doLatest(ctx context.Context, cmd *cli.Command) error {
+	packageSpec := cmd.Args().Get(0)
 
 	parts := strings.SplitN(packageSpec, "@", 2)
 	packageName := parts[0]

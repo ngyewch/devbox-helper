@@ -1,31 +1,26 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"os"
-	"strconv"
-	"strings"
-	"time"
 
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 var (
-	version         string
-	commit          string
-	commitTimestamp string
+	version string
 
-	projectDirFlag = &cli.PathFlag{
+	projectDirFlag = &cli.StringFlag{
 		Name:    "project-dir",
 		Usage:   "project directory",
 		Value:   ".",
-		EnvVars: []string{"PROJECT_DIR"},
+		Sources: cli.EnvVars("PROJECT_DIR"),
 	}
 )
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name:    "devbox-helper",
 		Usage:   "Devbox helper",
 		Version: version,
@@ -36,7 +31,7 @@ func main() {
 				Flags: []cli.Flag{
 					projectDirFlag,
 				},
-				Subcommands: []*cli.Command{
+				Commands: []*cli.Command{
 					{
 						Name:   "latest",
 						Usage:  "latest",
@@ -53,31 +48,7 @@ func main() {
 		},
 	}
 
-	cli.VersionPrinter = func(cCtx *cli.Context) {
-		var parts []string
-		if version != "" {
-			parts = append(parts, fmt.Sprintf("version=%s", version))
-		}
-		if commit != "" {
-			parts = append(parts, fmt.Sprintf("commit=%s", commit))
-		}
-		if commitTimestamp != "" {
-			formattedCommitTimestamp := func(commitTimestamp string) string {
-				epochSeconds, err := strconv.ParseInt(commitTimestamp, 10, 64)
-				if err != nil {
-					return ""
-				}
-				t := time.Unix(epochSeconds, 0)
-				return t.Format(time.RFC3339)
-			}(commitTimestamp)
-			if formattedCommitTimestamp != "" {
-				parts = append(parts, fmt.Sprintf("commitTimestamp=%s", formattedCommitTimestamp))
-			}
-		}
-		fmt.Println(strings.Join(parts, " "))
-	}
-
-	err := app.Run(os.Args)
+	err := app.Run(context.Background(), os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
