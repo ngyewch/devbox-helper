@@ -19,5 +19,6 @@ tasks:
   dependencyUpdates:
     desc: Show dependency updates
     deps: [ install ]
+    aliases: [ outdated ]
     cmds:
       - go list -u -m -json all | go-mod-outdated -update -direct
