@@ -39,10 +39,31 @@ func doProjectLatest(ctx context.Context, cmd *cli.Command) error {
 		if err != nil {
 			return err
 		}
-		if pkg.Version != resolveResponse.Version {
-			fmt.Printf("%s@%s -> %s (latest)\n", pkg.Name, pkg.Version, resolveResponse.Version)
+		latestVersion := resolveResponse.Version
+
+		if latestVersion == "" {
+			pkgResponse, err := client.Pkg(devbox.PkgRequest{
+				Name: pkg.Name,
+			})
+			if err != nil {
+				return err
+			}
+			for _, release := range pkgResponse.Releases {
+				if release.Version != "" {
+					latestVersion = release.Version
+					break
+				}
+			}
+		}
+
+		if latestVersion == "" {
+			fmt.Printf("%s@%s -> ?\n", pkg.Name, pkg.Version)
 		} else {
-			fmt.Printf("%s@%s (up-to-date)\n", pkg.Name, pkg.Version)
+			if pkg.Version != latestVersion {
+				fmt.Printf("%s@%s -> %s (latest)\n", pkg.Name, pkg.Version, resolveResponse.Version)
+			} else {
+				fmt.Printf("%s@%s (up-to-date)\n", pkg.Name, pkg.Version)
+			}
 		}
 	}
 
