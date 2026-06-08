@@ -22,3 +22,7 @@ tasks:
     aliases: [ outdated ]
     cmds:
       - go list -u -m -json all | go-mod-outdated -update -direct
+
+  mingo:
+    cmds:
+      - mingo -tests -v
